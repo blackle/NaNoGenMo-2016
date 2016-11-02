@@ -7,8 +7,10 @@ int main(int argc, char* argv[]) {
   int h = 6*2;
   GameState g(w,h);
   g.rollDice();
-
   std::cout << g;
+  g.takeTurn(0,3,PLAYER_BLACK);
+  std::cout << g;
+
 
   return 0;
 }

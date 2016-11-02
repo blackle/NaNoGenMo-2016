@@ -11,8 +11,9 @@ TerritoryTracker::TerritoryTracker(int w, int h)
   , _maxId(0)
 {
   int totalcells = w*h;
-  _states = (int8_t*)malloc(sizeof(int8_t)*totalcells);
-  std::memset(_states, EMPTY, totalcells);
+  size_t intsize = sizeof(int8_t);
+  _states = (int8_t*)malloc(intsize*totalcells);
+  std::memset(_states, EMPTY, intsize*totalcells);
 }
 
 TerritoryTracker::~TerritoryTracker() {
@@ -73,6 +74,7 @@ int8_t TerritoryTracker::operator()(int i, int j) const {
 }
 
 int8_t& TerritoryTracker::operator()(int i, int j) {
+  _fill = EMPTY;
   if (i < 0 or i >= _w) {
     return _fill;
   }

@@ -19,6 +19,7 @@ private:
   friend std::ostream& operator <<(std::ostream& o, const GameState& state);
   void fillCanGo(int m, int n, int x, int y);
   void setCanGo(int x, int y);
+  void cleanUpPostTurn();
 
   int _w;
   int _h;

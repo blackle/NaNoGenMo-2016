@@ -17,10 +17,6 @@ GameState::GameState(int w, int h)
   , _h(h)
   , _current(PLAYER_BLACK)
 {
-  _g(4,1) = CELL_WHITE;
-  _g(4,2) = CELL_BLACK;
-  _g(4,3) = CELL_BLACK;
-  _g(3,3) = CELL_WHITE;
 }
 
 GameState::~GameState() {
@@ -93,7 +89,27 @@ bool GameState::takeTurn(int i, int j, PlayerName name) {
     return false;
   }
 
-  return false;
+  _g(i,j) = ((name == PLAYER_BLACK) ? CELL_BLACK : CELL_WHITE);
+  _current = ((name == PLAYER_BLACK) ? PLAYER_WHITE : PLAYER_BLACK);
+  if (name == PLAYER_BLACK) {
+    _tBlack.placeAt(i,j);
+  } else {
+    _tWhite.placeAt(i,j);
+  }
+
+  cleanUpPostTurn();
+
+  return true;
+}
+
+void GameState::cleanUpPostTurn() {
+  _dieA = -1;
+  _dieB = -1;
+  for (int i = 0; i < _w; i++) {
+    for (int j = 0; j < _h; j++) {
+      if (_g(i,j) == CELL_CANGO) _g(i,j) = CELL_EMPTY;
+    }
+  }
 }
 
 PlayerName GameState::currentPlayer() const {
