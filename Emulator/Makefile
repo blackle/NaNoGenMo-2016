@@ -1,9 +1,9 @@
 CC = g++
-CFLAGS = -g -O2
+CFLAGS = -g -O2 -std=c++11
 LINKER = g++
 LFLAGS = -fuse-ld=gold
 
-OBJS = main.o GameBoard.o
+OBJS = main.o GameBoard.o TerritoryTracker.o GameState.o
 
 main : $(OBJS)
 	$(LINKER) $(LFLAGS) -o $@ $^

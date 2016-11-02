@@ -57,6 +57,8 @@ std::ostream& operator <<(std::ostream& o, const GameBoard& board) {
           o << "\033[48;2;0;0;0m  \033[0m"; break;
         case CELL_WHITE:
           o << "\033[48;2;255;255;255m  \033[0m"; break;
+        case CELL_CANGO:
+          o << "\033[48;2;255;0;0m  \033[0m"; break;
         default:
           o << "??"; break;
       }

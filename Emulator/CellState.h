@@ -6,6 +6,7 @@ typedef enum cellState {
   CELL_OOB, //out of bounds
   CELL_BLACK,
   CELL_WHITE,
+  CELL_CANGO,
 } CellState;
 
 #endif
