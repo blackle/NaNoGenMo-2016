@@ -8,9 +8,9 @@ GameBoard::GameBoard(int w, int h) {
   _w = w;
   _h = h;
   int totalcells = w*h;
-  size_t cellStateSize = sizeof(CellState);
-  _states = (CellState*)malloc(cellStateSize*totalcells);
-  std::memset(_states, CELL_EMPTY, cellStateSize*totalcells);
+  size_t statesSize = sizeof(CellState)*totalcells;
+  _states = (CellState*)malloc(statesSize);
+  std::memset(_states, CELL_EMPTY, statesSize);
 }
 
 GameBoard::~GameBoard() {
