@@ -4,7 +4,8 @@
 #include <random>
 #include "GameState.h"
 
-static std::random_device RD;
+static std::random_device RD_SOURCE;
+static std::minstd_rand RD(RD_SOURCE());
 static std::uniform_int_distribution<int> DICE(0, 5);
 
 GameState::GameState(int w, int h)
@@ -16,6 +17,9 @@ GameState::GameState(int w, int h)
   , _w(w)
   , _h(h)
   , _current(PLAYER_BLACK)
+  , _moves(w*h)
+  , _secondRoll(false)
+  , _spacesFilled(0)
 {
 }
 
@@ -42,6 +46,16 @@ void GameState::rollDice() {
       fillCanGo(m,n,_dieA,_dieB);
       fillCanGo(m,n,_dieB,_dieA);
     }
+  }
+
+  if (_moves.count() == 0) {
+    if (_secondRoll) {
+      _secondRoll = false;
+      nextPlayer();
+    } else {
+      _secondRoll = true;
+    }
+    cleanUpPostTurn();
   }
 }
 
@@ -74,9 +88,16 @@ void GameState::fillCanGo(int m, int n, int x, int y) {
 
 void GameState::setCanGo(int x, int y) {
   _g(x,y) = CELL_CANGO;
+
+  Move m;
+  m.i = x;
+  m.j = y;
+  _moves.addMove(m);
 }
 
-bool GameState::takeTurn(int i, int j, PlayerName name) {
+bool GameState::takeTurn(Move m, PlayerName name) {
+  int i = m.i;
+  int j = m.j;
   if (name != _current) {
     return false;
   }
@@ -90,19 +111,25 @@ bool GameState::takeTurn(int i, int j, PlayerName name) {
   }
 
   _g(i,j) = ((name == PLAYER_BLACK) ? CELL_BLACK : CELL_WHITE);
-  _current = ((name == PLAYER_BLACK) ? PLAYER_WHITE : PLAYER_BLACK);
+  _spacesFilled += 1;
   if (name == PLAYER_BLACK) {
     _tBlack.placeAt(i,j);
   } else {
     _tWhite.placeAt(i,j);
   }
 
+  nextPlayer();
   cleanUpPostTurn();
 
   return true;
 }
 
+bool GameState::isOver() {
+  return _spacesFilled == _w*_h;
+}
+
 void GameState::cleanUpPostTurn() {
+  _moves.clear();
   _dieA = -1;
   _dieB = -1;
   for (int i = 0; i < _w; i++) {
@@ -112,17 +139,45 @@ void GameState::cleanUpPostTurn() {
   }
 }
 
+void GameState::nextPlayer() {
+  _current = ((_current == PLAYER_BLACK) ? PLAYER_WHITE : PLAYER_BLACK);
+}
+
 PlayerName GameState::currentPlayer() const {
   return _current;
+}
+
+PlayerName GameState::winningPlayer() const {
+  int blackSize = _tBlack(_tBlack.largestTerritory());
+  int whiteSize = _tWhite(_tWhite.largestTerritory());
+  if (blackSize > whiteSize) {
+    return PLAYER_BLACK;
+  } else {
+    return PLAYER_WHITE;
+  }
+}
+
+MoveList& GameState::moves() {
+  return _moves;
 }
 
 std::ostream& operator <<(std::ostream& o, const GameState& state) {
   o << "Player: ";
   o << ((state.currentPlayer() == PLAYER_BLACK) ? "Black\n" : "White\n");
+  o << "Current winner: ";
+  switch (state.winningPlayer()) {
+    case PLAYER_WHITE:
+      o << "White\n"; break;
+    case PLAYER_BLACK:
+      o << "Black\n"; break;
+    default:
+      o << "???\n"; break;
+  } 
   o << "Dice: " << state._dieA+1 << " " << state._dieB+1 << "\n";
   o << state._g;
-  o << "Territory for black: ";
+  return o;
+  o << "Territory for black: \n";
   o << state._tBlack;
-  o << "Territory for white: ";
+  o << "Territory for white: \n";
   o << state._tWhite;
 }

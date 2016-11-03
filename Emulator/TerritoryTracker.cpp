@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <cstring>
+#include <iomanip>
 #include "TerritoryTracker.h"
 
 #define EMPTY -1
@@ -14,10 +15,15 @@ TerritoryTracker::TerritoryTracker(int w, int h)
   size_t statesSize = sizeof(int8_t)*totalcells;
   _states = (int8_t*)malloc(statesSize);
   std::memset(_states, EMPTY, statesSize);
+
+  size_t idSizesSize = sizeof(uint8_t)*totalcells;
+  _idSizes = (uint8_t*)malloc(idSizesSize);
+  std::memset(_idSizes, 0, idSizesSize);
 }
 
 TerritoryTracker::~TerritoryTracker() {
   free(_states);
+  free(_idSizes);
 }
 
 int TerritoryTracker::width() const {
@@ -41,11 +47,14 @@ void TerritoryTracker::placeAt(int i, int j) {
 
   if (minId == EMPTY) {
     (*this)(i,j) = _maxId;
+    _idSizes[_maxId] += 1;
     _maxId++;
     return;
   }
 
   (*this)(i,j) = minId;
+  _idSizes[minId] += 1;
+  
   if (north != EMPTY) replaceAll(north, minId);
   if (south != EMPTY) replaceAll(south, minId);
   if (east != EMPTY) replaceAll(east, minId);
@@ -53,6 +62,11 @@ void TerritoryTracker::placeAt(int i, int j) {
 }
 
 void TerritoryTracker::replaceAll(int8_t oldId, int8_t newId) {
+  if (oldId == newId) {
+    return;
+  }
+  _idSizes[newId] += _idSizes[oldId];
+  _idSizes[oldId] = 0;
   for (int j = 0; j < _h; j++) {
     for (int i = 0; i < _w; i++) {
       int8_t cellval = (*this)(i,j);
@@ -84,23 +98,44 @@ int8_t& TerritoryTracker::operator()(int i, int j) {
   return _states[i*_h+j];
 }
 
+uint8_t TerritoryTracker::operator()(int n) const {
+  return _idSizes[n];
+}
+
+int TerritoryTracker::largestTerritory() const {
+  uint8_t currMaxVal = 0;
+  int currMaxIndex = 0;
+  for (int n = 0; n < _h*_w; n++) {
+    if (currMaxVal < _idSizes[n]) {
+      currMaxVal = _idSizes[n];
+      currMaxIndex = n;
+    }
+  }
+  return currMaxIndex;
+}
+
 std::ostream& operator <<(std::ostream& o, const TerritoryTracker& tracker) {
+  std::ios init(NULL);
+  init.copyfmt(o);
   for (int j = 0; j < tracker.height(); j++) {
     for (int i = 0; i < tracker.width(); i++) {
       int8_t zone = tracker(i,j);
-      switch (zone) {
-        case EMPTY:
-          o << "  "; break;
-        case 0:
-          o << " 0"; break;
-        case 1:
-          o << " 1"; break;
-        case 2:
-          o << " 2"; break;
-        default:
-          o << " ?"; break;
+      if (zone == EMPTY) {
+        o << "   ";
+      } else {
+        o << std::setw(2) << std::setfill('0') << std::hex << (int)zone << " ";
       }
     }
     std::cout << "\n";
+  }
+  o.copyfmt(init);
+  o << "enumerated:\n";
+  for (int k = 0; k < tracker.height()*tracker.width(); k++) {
+    uint8_t size = tracker(k);
+    if (size > 0) {
+      o << std::setw(2) << std::setfill('0') << std::hex << k << ": ";
+      o.copyfmt(init);
+      o << (int)size << "\n";
+    }
   }
 }

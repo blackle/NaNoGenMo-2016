@@ -12,6 +12,8 @@ public:
   int height() const;
   void placeAt(int i, int j);
   int8_t operator()(int i, int j) const;
+  uint8_t operator()(int n) const;
+  int largestTerritory() const;
 private:
   friend std::ostream& operator <<(std::ostream& o, const TerritoryTracker& tracker);
   int8_t& operator()(int i, int j);
@@ -20,6 +22,7 @@ private:
   int _w;
   int _h;
   int8_t* _states;
+  uint8_t* _idSizes;
   int8_t _fill;
   int8_t _maxId;
 };

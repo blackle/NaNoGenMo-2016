@@ -8,11 +8,13 @@ class MoveList {
 public:
   MoveList(int size);
   ~MoveList();
-  void addMove(Move m);
+  void addMove(Move& m);
   void clear();
+  int count() const;
   Move operator()(int n) const;
 private:
   int _size;
+  int _count;
   Move* _moves;
 };
 
