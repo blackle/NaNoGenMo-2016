@@ -49,14 +49,14 @@ PlayerName playGame() {
       g.takeTurn(m,currentPlayer);
     }
   }
-  std::cout << g;
+  // std::cout << g;
   return g.winningPlayer();
 }
 
 int main(int argc, char* argv[]) {
   int blackWins = 0;
   int whiteWins = 0;
-  for (int k = 0; k < 20; k++) {
+  for (int k = 0; k < 20000; k++) {
     PlayerName winner = playGame();
     switch (winner) {
       case PLAYER_WHITE:
@@ -69,6 +69,8 @@ int main(int argc, char* argv[]) {
   }
   std::cout << "black wins: " << blackWins << "\n";
   std::cout << "white wins: " << whiteWins << "\n";
+  
+  std::cout << "black win %: " << (100.0*blackWins)/(1.0*blackWins+whiteWins) << "\n";
 
   return 0;
 }
