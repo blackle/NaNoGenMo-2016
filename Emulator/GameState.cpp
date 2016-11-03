@@ -92,6 +92,19 @@ void GameState::setCanGo(int x, int y) {
   Move m;
   m.i = x;
   m.j = y;
+  m.borderWhite = 0;
+  m.borderBlack = 0;
+
+  if (_g(x-1,y) == CELL_BLACK) m.borderBlack += _tBlack(_tBlack(x-1,y));
+  if (_g(x+1,y) == CELL_BLACK) m.borderBlack += _tBlack(_tBlack(x+1,y));
+  if (_g(x,y-1) == CELL_BLACK) m.borderBlack += _tBlack(_tBlack(x,y-1));
+  if (_g(x,y+1) == CELL_BLACK) m.borderBlack += _tBlack(_tBlack(x,y+1));
+
+  if (_g(x-1,y) == CELL_WHITE) m.borderWhite += _tWhite(_tWhite(x-1,y));
+  if (_g(x+1,y) == CELL_WHITE) m.borderWhite += _tWhite(_tWhite(x+1,y));
+  if (_g(x,y-1) == CELL_WHITE) m.borderWhite += _tWhite(_tWhite(x,y-1));
+  if (_g(x,y+1) == CELL_WHITE) m.borderWhite += _tWhite(_tWhite(x,y+1));
+
   _moves.addMove(m);
 }
 
@@ -110,7 +123,7 @@ bool GameState::takeTurn(Move m, PlayerName name) {
     return false;
   }
 
-  _g(i,j) = ((name == PLAYER_BLACK) ? CELL_BLACK : CELL_WHITE);
+  _g(i,j) = playerToCell(name);
   _spacesFilled += 1;
   if (name == PLAYER_BLACK) {
     _tBlack.placeAt(i,j);
@@ -140,11 +153,15 @@ void GameState::cleanUpPostTurn() {
 }
 
 void GameState::nextPlayer() {
-  _current = ((_current == PLAYER_BLACK) ? PLAYER_WHITE : PLAYER_BLACK);
+  _current = opponentPlayer();
 }
 
 PlayerName GameState::currentPlayer() const {
   return _current;
+}
+
+PlayerName GameState::opponentPlayer() const {
+  return ((_current == PLAYER_BLACK) ? PLAYER_WHITE : PLAYER_BLACK);
 }
 
 PlayerName GameState::winningPlayer() const {
@@ -154,6 +171,14 @@ PlayerName GameState::winningPlayer() const {
     return PLAYER_BLACK;
   } else {
     return PLAYER_WHITE;
+  }
+}
+
+CellState GameState::playerToCell(PlayerName player) const {
+  if (player == PLAYER_BLACK) {
+    return CELL_BLACK;
+  } else {
+    return CELL_WHITE;
   }
 }
 

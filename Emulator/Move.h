@@ -4,6 +4,8 @@
 typedef struct move {
   int i;
   int j;
+  int borderWhite;
+  int borderBlack;
 } Move;
 
 #endif

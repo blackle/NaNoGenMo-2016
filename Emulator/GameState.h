@@ -17,7 +17,9 @@ public:
   bool takeTurn(Move m, PlayerName name);
   bool isOver();
   PlayerName currentPlayer() const;
+  PlayerName opponentPlayer() const;
   PlayerName winningPlayer() const;
+  CellState playerToCell(PlayerName player) const;
   MoveList& moves();
 private:
   friend std::ostream& operator <<(std::ostream& o, const GameState& state);

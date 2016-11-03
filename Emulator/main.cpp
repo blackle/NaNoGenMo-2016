@@ -20,24 +20,43 @@ PlayerName playGame() {
 
     if (moves.count() > 0) {
       Move m;
-      if (currentPlayer == PLAYER_BLACK) {
-        std::uniform_int_distribution<int> rng(0, moves.count()-1);
-        m = moves(rng(RD));
-      } else {
-        std::uniform_int_distribution<int> rng(0, moves.count()-1);
-        m = moves(rng(RD));
+      // if (currentPlayer == PLAYER_BLACK) {
+        // std::uniform_int_distribution<int> rng(0, moves.count()-1);
+        // m = moves(rng(RD));
+      // } else {
+        int bestIndex = 0;
+        int bestValue = 0;
+        for (int k = 0; k < moves.count(); k++) {
+          Move thisMove = moves(k);
+          int thisValue = 0;
+          if (currentPlayer == PLAYER_BLACK) {
+            thisValue = thisMove.borderBlack*1 + thisMove.borderWhite*3;
+          } else {
+            thisValue = 0;//thisMove.borderBlack*2 + thisMove.borderWhite*1;
+          }
+          if (bestValue < thisValue) {
+            bestValue = thisValue;
+            bestIndex = k;
+          }
+        // }
+        if (bestValue == 0) {
+          std::uniform_int_distribution<int> rng(0, moves.count()-1);
+          m = moves(rng(RD));
+        } else {
+          m = moves(bestIndex);
+        }
       }
       g.takeTurn(m,currentPlayer);
     }
   }
-  // std::cout << g;
+  std::cout << g;
   return g.winningPlayer();
 }
 
 int main(int argc, char* argv[]) {
   int blackWins = 0;
   int whiteWins = 0;
-  for (int k = 0; k < 200000; k++) {
+  for (int k = 0; k < 20; k++) {
     PlayerName winner = playGame();
     switch (winner) {
       case PLAYER_WHITE:

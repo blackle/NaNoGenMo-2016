@@ -11,12 +11,12 @@ public:
   int width() const;
   int height() const;
   void placeAt(int i, int j);
-  int8_t operator()(int i, int j) const;
-  uint8_t operator()(int n) const;
+  const int8_t operator()(int i, int j) const;
+  const uint8_t operator()(int n) const;
   int largestTerritory() const;
+  int8_t& operator()(int i, int j);
 private:
   friend std::ostream& operator <<(std::ostream& o, const TerritoryTracker& tracker);
-  int8_t& operator()(int i, int j);
   void replaceAll(int8_t i, int8_t j);
 
   int _w;

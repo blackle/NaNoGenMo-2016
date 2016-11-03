@@ -77,7 +77,7 @@ void TerritoryTracker::replaceAll(int8_t oldId, int8_t newId) {
   }
 }
 
-int8_t TerritoryTracker::operator()(int i, int j) const {
+const int8_t TerritoryTracker::operator()(int i, int j) const {
   if (i < 0 or i >= _w) {
     return EMPTY;
   }
@@ -98,7 +98,7 @@ int8_t& TerritoryTracker::operator()(int i, int j) {
   return _states[i*_h+j];
 }
 
-uint8_t TerritoryTracker::operator()(int n) const {
+const uint8_t TerritoryTracker::operator()(const int n) const {
   return _idSizes[n];
 }
 
