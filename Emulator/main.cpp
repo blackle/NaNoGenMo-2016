@@ -30,7 +30,7 @@ PlayerName playGame() {
           Move thisMove = moves(k);
           int thisValue = 0;
           if (currentPlayer == PLAYER_BLACK) {
-            thisValue = thisMove.borderBlack*1 + thisMove.borderWhite*3;
+            thisValue = thisMove.borderBlack*4 + thisMove.borderWhite*19;
           } else {
             thisValue = 0;//thisMove.borderBlack*2 + thisMove.borderWhite*1;
           }
