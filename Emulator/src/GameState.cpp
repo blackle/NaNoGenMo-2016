@@ -34,9 +34,11 @@ int GameState::height() const {
   return _h;
 }
 
-void GameState::rollDice() {
+void GameState::rollDice(int& dieA, int& dieB) {
   _dieA = DICE(RD);
   _dieB = DICE(RD);
+  dieA = _dieA;
+  dieB = _dieB;
 
   int subSquaresM = _w/6;
   int subSquaresN = _h/6;
@@ -153,6 +155,7 @@ void GameState::cleanUpPostTurn() {
 }
 
 void GameState::nextPlayer() {
+  _secondRoll = false;
   _current = opponentPlayer();
 }
 
@@ -187,6 +190,8 @@ MoveList& GameState::moves() {
 }
 
 std::ostream& operator <<(std::ostream& o, const GameState& state) {
+  o << state._g;
+  return o;
   o << "Player: ";
   o << ((state.currentPlayer() == PLAYER_BLACK) ? "Black\n" : "White\n");
   o << "Current winner: ";

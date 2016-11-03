@@ -13,7 +13,7 @@ public:
   ~GameState();
   int width() const;
   int height() const;
-  void rollDice();
+  void rollDice(int& dieA, int& dieB);
   bool takeTurn(Move m, PlayerName name);
   bool isOver();
   PlayerName currentPlayer() const;
