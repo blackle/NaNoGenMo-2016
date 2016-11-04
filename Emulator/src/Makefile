@@ -2,11 +2,14 @@
 CC = g++
 CFLAGS = -g -O3 -std=c++11
 LINKER = g++
-LFLAGS = -fuse-ld=gold
+LFLAGS = -fuse-ld=gold -pthread
 
-OBJS = main.o GameBoard.o TerritoryTracker.o GameState.o MoveList.o
+OBJS = GameBoard.o TerritoryTracker.o GameState.o MoveList.o
 
-main : $(OBJS)
+statistics : statistics.o $(OBJS)
+	$(LINKER) $(LFLAGS) -o $@ $^
+
+main : main.o $(OBJS)
 	$(LINKER) $(LFLAGS) -o $@ $^
 
 %.o : %.cpp %.h Makefile
