@@ -2,22 +2,21 @@
 #include <sstream>
 #include <cstring>
 #include <random>
+#include "RoyalClod.h"
 #include "GameState.h"
 
 static std::random_device RD_SOURCE;
 static std::minstd_rand RD(RD_SOURCE());
 static std::uniform_int_distribution<int> DICE(0, 5);
 
-GameState::GameState(int w, int h)
-  : _g(w,h)
-  , _tBlack(w,h)
-  , _tWhite(w,h)
+GameState::GameState()
+  : _g()
+  , _tBlack()
+  , _tWhite()
   , _dieA(-1)
   , _dieB(-1)
-  , _w(w)
-  , _h(h)
   , _current(PLAYER_BLACK)
-  , _moves(w*h)
+  , _moves()
   , _secondRoll(false)
   , _spacesFilled(0)
 {
@@ -26,22 +25,14 @@ GameState::GameState(int w, int h)
 GameState::~GameState() {
 }
 
-int GameState::width() const {
-  return _w;
-}
-
-int GameState::height() const {
-  return _h;
-}
-
 void GameState::rollDice(int& dieA, int& dieB) {
   _dieA = DICE(RD);
   _dieB = DICE(RD);
   dieA = _dieA;
   dieB = _dieB;
 
-  int subSquaresM = _w/6;
-  int subSquaresN = _h/6;
+  int subSquaresM = WIDTH/6;
+  int subSquaresN = HEIGHT/6;
 
   for (int m = 0; m < subSquaresM; m++) {
     for (int n = 0; n < subSquaresN; n++) {
@@ -140,15 +131,15 @@ bool GameState::takeTurn(Move m, PlayerName name) {
 }
 
 bool GameState::isOver() {
-  return _spacesFilled == _w*_h;
+  return _spacesFilled == WIDTH*HEIGHT;
 }
 
 void GameState::cleanUpPostTurn() {
   _moves.clear();
   _dieA = -1;
   _dieB = -1;
-  for (int i = 0; i < _w; i++) {
-    for (int j = 0; j < _h; j++) {
+  for (int i = 0; i < WIDTH; i++) {
+    for (int j = 0; j < HEIGHT; j++) {
       if (_g(i,j) == CELL_CANGO) _g(i,j) = CELL_EMPTY;
     }
   }

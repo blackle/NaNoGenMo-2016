@@ -2,16 +2,15 @@
 #include <sstream>
 #include <cstring>
 #include <iomanip>
+#include "RoyalClod.h"
 #include "TerritoryTracker.h"
 
 #define EMPTY -1
 
-TerritoryTracker::TerritoryTracker(int w, int h) 
-  : _w(w)
-  , _h(h)
-  , _maxId(0)
+TerritoryTracker::TerritoryTracker() 
+  : _maxId(0)
 {
-  int totalcells = w*h;
+  int totalcells = WIDTH*HEIGHT;
   size_t statesSize = sizeof(int8_t)*totalcells;
   _states = (int8_t*)malloc(statesSize);
   std::memset(_states, EMPTY, statesSize);
@@ -24,14 +23,6 @@ TerritoryTracker::TerritoryTracker(int w, int h)
 TerritoryTracker::~TerritoryTracker() {
   free(_states);
   free(_idSizes);
-}
-
-int TerritoryTracker::width() const {
-  return _w;
-}
-
-int TerritoryTracker::height() const {
-  return _h;
 }
 
 void TerritoryTracker::placeAt(int i, int j) {
@@ -67,8 +58,8 @@ void TerritoryTracker::replaceAll(int8_t oldId, int8_t newId) {
   }
   _idSizes[newId] += _idSizes[oldId];
   _idSizes[oldId] = 0;
-  for (int j = 0; j < _h; j++) {
-    for (int i = 0; i < _w; i++) {
+  for (int j = 0; j < HEIGHT; j++) {
+    for (int i = 0; i < WIDTH; i++) {
       int8_t cellval = (*this)(i,j);
       if (cellval == oldId) {
         (*this)(i,j) = newId;
@@ -78,24 +69,24 @@ void TerritoryTracker::replaceAll(int8_t oldId, int8_t newId) {
 }
 
 const int8_t TerritoryTracker::operator()(int i, int j) const {
-  if (i < 0 or i >= _w) {
+  if (i < 0 or i >= WIDTH) {
     return EMPTY;
   }
-  if (j < 0 or j >= _h) {
+  if (j < 0 or j >= HEIGHT) {
     return EMPTY;
   }
-  return _states[i*_h+j];
+  return _states[i*HEIGHT+j];
 }
 
 int8_t& TerritoryTracker::operator()(int i, int j) {
   _fill = EMPTY;
-  if (i < 0 or i >= _w) {
+  if (i < 0 or i >= WIDTH) {
     return _fill;
   }
-  if (j < 0 or j >= _h) {
+  if (j < 0 or j >= HEIGHT) {
     return _fill;
   }
-  return _states[i*_h+j];
+  return _states[i*HEIGHT+j];
 }
 
 const uint8_t TerritoryTracker::operator()(const int n) const {
@@ -105,7 +96,7 @@ const uint8_t TerritoryTracker::operator()(const int n) const {
 int TerritoryTracker::largestTerritory() const {
   uint8_t currMaxVal = 0;
   int currMaxIndex = 0;
-  for (int n = 0; n < _h*_w; n++) {
+  for (int n = 0; n < HEIGHT*WIDTH; n++) {
     if (currMaxVal < _idSizes[n]) {
       currMaxVal = _idSizes[n];
       currMaxIndex = n;
@@ -117,8 +108,8 @@ int TerritoryTracker::largestTerritory() const {
 std::ostream& operator <<(std::ostream& o, const TerritoryTracker& tracker) {
   std::ios init(NULL);
   init.copyfmt(o);
-  for (int j = 0; j < tracker.height(); j++) {
-    for (int i = 0; i < tracker.width(); i++) {
+  for (int j = 0; j < HEIGHT; j++) {
+    for (int i = 0; i < WIDTH; i++) {
       int8_t zone = tracker(i,j);
       if (zone == EMPTY) {
         o << "   ";
@@ -130,7 +121,7 @@ std::ostream& operator <<(std::ostream& o, const TerritoryTracker& tracker) {
   }
   o.copyfmt(init);
   o << "enumerated:\n";
-  for (int k = 0; k < tracker.height()*tracker.width(); k++) {
+  for (int k = 0; k < HEIGHT*WIDTH; k++) {
     uint8_t size = tracker(k);
     if (size > 0) {
       o << std::setw(2) << std::setfill('0') << std::hex << k << ": ";

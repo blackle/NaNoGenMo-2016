@@ -9,17 +9,23 @@ static std::random_device RD_SOURCE;
 static std::minstd_rand RD(RD_SOURCE());
 // static std::random_device RD;
 
-#define SAMPLE_SIZE 20000
+#define SAMPLE_SIZE 2000
 #define THREADS 8
 
 static std::mutex mtx;
 static int blackSampleTotal = 0;
 static int whiteSampleTotal = 0;
 
+int evaluator(Move& m, int turns, GameState& g) {
+  if (turns == -1) {
+    return m.borderBlack*4 + m.borderWhite*18;
+  } else {
+    return (m.borderBlack+1)*5 + (m.borderWhite+1)*18;
+  }
+}
+
 PlayerName playGame() {
-  int w = 6*3;
-  int h = 6*2;
-  GameState g(w,h);
+  GameState g;
   int turnNum = 0;
 
   while (!g.isOver()) {
@@ -40,9 +46,10 @@ PlayerName playGame() {
         Move thisMove = moves(k);
         int thisValue = 0;
         if (currentPlayer == PLAYER_BLACK) {
-          thisValue = thisMove.borderBlack*4 + thisMove.borderWhite*19;
+          thisValue = evaluator(thisMove, turnNum, g);
         } else {
-          thisValue = 0;//thisMove.borderBlack*2 + thisMove.borderWhite*1;
+          // thisValue = 0;
+          thisValue = thisMove.borderWhite*4 + thisMove.borderBlack*19;
         }
         if (bestValue < thisValue) {
           bestValue = thisValue;

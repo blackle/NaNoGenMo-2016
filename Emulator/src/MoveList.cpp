@@ -1,13 +1,14 @@
 #include <cstdlib>
 #include <sstream>
 #include <cstring>
+#include "RoyalClod.h"
 #include "MoveList.h"
 
-MoveList::MoveList(int size)
-  : _size(size)
+MoveList::MoveList()
+  : _size(WIDTH*HEIGHT)
   , _count(0)
 {
-  size_t moveSize = size*sizeof(Move);
+  size_t moveSize = _size*sizeof(Move);
   _moves = (Move*)malloc(moveSize);
 }
 

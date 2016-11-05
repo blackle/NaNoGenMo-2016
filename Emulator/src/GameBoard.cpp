@@ -1,13 +1,12 @@
 #include <cstdlib>
 #include <sstream>
 #include <cstring>
+#include "RoyalClod.h"
 #include "CellState.h"
 #include "GameBoard.h"
 
-GameBoard::GameBoard(int w, int h) {
-  _w = w;
-  _h = h;
-  int totalcells = w*h;
+GameBoard::GameBoard() {
+  int totalcells = WIDTH*HEIGHT;
   size_t statesSize = sizeof(CellState)*totalcells;
   _states = (CellState*)malloc(statesSize);
   std::memset(_states, CELL_EMPTY, statesSize);
@@ -17,38 +16,30 @@ GameBoard::~GameBoard() {
   free(_states);
 }
 
-int GameBoard::width() const {
-  return _w;
-}
-
-int GameBoard::height() const {
-  return _h;
-}
-
 CellState GameBoard::operator()(int i, int j) const {
-  if (i < 0 or i >= _w) {
+  if (i < 0 or i >= WIDTH) {
     return CELL_OOB;
   }
-  if (j < 0 or j >= _h) {
+  if (j < 0 or j >= HEIGHT) {
     return CELL_OOB;
   }
-  return _states[i*_h+j];
+  return _states[i*HEIGHT+j];
 }
 
 CellState& GameBoard::operator()(int i, int j) {
   _fill = CELL_OOB;
-  if (i < 0 or i >= _w) {
+  if (i < 0 or i >= WIDTH) {
     return _fill;
   }
-  if (j < 0 or j >= _h) {
+  if (j < 0 or j >= HEIGHT) {
     return _fill;
   }
-  return _states[i*_h+j];
+  return _states[i*HEIGHT+j];
 }
 
 std::ostream& operator <<(std::ostream& o, const GameBoard& board) {
-  for (int j = -1; j < board.height()+1; j++) {
-    for (int i = -1; i < board.width()+1; i++) {
+  for (int j = -1; j < HEIGHT+1; j++) {
+    for (int i = -1; i < WIDTH+1; i++) {
       CellState cell = board(i,j);
       switch (cell) {
         case CELL_OOB:

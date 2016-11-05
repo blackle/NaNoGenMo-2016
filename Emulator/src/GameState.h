@@ -9,10 +9,8 @@
 
 class GameState {
 public:
-  GameState(int w, int h);
+  GameState();
   ~GameState();
-  int width() const;
-  int height() const;
   void rollDice(int& dieA, int& dieB);
   bool takeTurn(Move m, PlayerName name);
   bool isOver();
@@ -27,9 +25,6 @@ private:
   void setCanGo(int x, int y);
   void cleanUpPostTurn();
   void nextPlayer();
-
-  int _w;
-  int _h;
 
   bool _secondRoll;
   int _dieA;

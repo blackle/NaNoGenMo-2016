@@ -6,7 +6,7 @@
 
 class MoveList {
 public:
-  MoveList(int size);
+  MoveList();
   ~MoveList();
   void addMove(Move& m);
   void clear();

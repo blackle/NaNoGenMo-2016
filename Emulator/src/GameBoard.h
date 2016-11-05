@@ -6,15 +6,11 @@
 
 class GameBoard {
 public:
-  GameBoard(int w, int h);
+  GameBoard();
   ~GameBoard();
-  int width() const;
-  int height() const;
   CellState& operator()(int i, int j);
   CellState operator()(int i, int j) const;
 private:
-  int _w;
-  int _h;
   CellState* _states;
   CellState _fill;
 };
