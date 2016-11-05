@@ -5,8 +5,9 @@
 #include "RoyalClod.h"
 #include "GameState.h"
 
-static std::random_device RD_SOURCE;
-static std::minstd_rand RD(RD_SOURCE());
+static thread_local std::random_device RD_SOURCE;
+static thread_local std::minstd_rand RD(RD_SOURCE());
+// static std::random_device RD;
 static std::uniform_int_distribution<int> DICE(0, 5);
 
 GameState::GameState()

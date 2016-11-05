@@ -5,11 +5,11 @@
 #include <mutex>
 #include "GameState.h"
 
-static std::random_device RD_SOURCE;
-static std::minstd_rand RD(RD_SOURCE());
+static thread_local std::random_device RD_SOURCE;
+static thread_local std::minstd_rand RD(RD_SOURCE());
 // static std::random_device RD;
 
-#define SAMPLE_SIZE 2000
+#define SAMPLE_SIZE 20000
 #define THREADS 8
 
 static std::mutex mtx;
