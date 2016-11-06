@@ -21,6 +21,9 @@ private:
   uint8_t* _idSizes;
   int8_t _fill;
   int8_t _maxId;
+
+  uint8_t _lorgeVal;
+  int _lorgeId;
 };
 
 

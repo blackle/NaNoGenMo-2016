@@ -9,7 +9,7 @@ static thread_local std::random_device RD_SOURCE;
 static thread_local std::minstd_rand RD(RD_SOURCE());
 // static std::random_device RD;
 
-#define SAMPLE_SIZE 20000
+#define SAMPLE_SIZE 1000
 #define THREADS 8
 
 static std::mutex mtx;
@@ -17,14 +17,10 @@ static int blackSampleTotal = 0;
 static int whiteSampleTotal = 0;
 
 int evaluator(Move& m, int turns, GameState& g) {
-  if (turns == -1) {
-    return m.borderBlack*4 + m.borderWhite*18;
-  } else {
-    return (m.borderBlack+1)*5 + (m.borderWhite+1)*18;
-  }
+  return 0;
 }
 
-PlayerName playGame() {
+PlayerName playGame(bool printGame) {
   GameState g;
   int turnNum = 0;
 
@@ -48,8 +44,7 @@ PlayerName playGame() {
         if (currentPlayer == PLAYER_BLACK) {
           thisValue = evaluator(thisMove, turnNum, g);
         } else {
-          // thisValue = 0;
-          thisValue = thisMove.borderWhite*4 + thisMove.borderBlack*19;
+          thisValue = 0;
         }
         if (bestValue < thisValue) {
           bestValue = thisValue;
@@ -66,14 +61,17 @@ PlayerName playGame() {
       g.takeTurn(m,currentPlayer);
     }
   }
+  if (printGame) {
+    std::cout << g;
+  }
   return g.winningPlayer();
 }
 
-int collectStats() {
+int collectStats(int num) {
   int blackWins = 0;
   int whiteWins = 0;
   for (int k = 0; k < SAMPLE_SIZE; k++) {
-    PlayerName winner = playGame();
+    PlayerName winner = playGame(k == 0 && num == 0);
     switch (winner) {
       case PLAYER_WHITE:
         whiteWins++; break;
@@ -94,7 +92,7 @@ int main(int argc, char* argv[]) {
   std::thread threads[THREADS];
 
   for (int i=0; i<THREADS; ++i)
-    threads[i] = std::thread(collectStats);
+    threads[i] = std::thread(collectStats, i);
 
   for (auto& th : threads) th.join();
 

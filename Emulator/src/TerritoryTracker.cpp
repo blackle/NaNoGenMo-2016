@@ -9,6 +9,8 @@
 
 TerritoryTracker::TerritoryTracker() 
   : _maxId(0)
+  , _lorgeVal(0)
+  , _lorgeId(0)
 {
   int totalcells = WIDTH*HEIGHT;
   size_t statesSize = sizeof(int8_t)*totalcells;
@@ -39,6 +41,10 @@ void TerritoryTracker::placeAt(int i, int j) {
   if (minId == EMPTY) {
     (*this)(i,j) = _maxId;
     _idSizes[_maxId] += 1;
+    if (_idSizes[_maxId] > _lorgeVal) {
+      _lorgeVal = _idSizes[_maxId];
+      _lorgeId = _maxId;
+    }
     _maxId++;
     return;
   }
@@ -50,6 +56,11 @@ void TerritoryTracker::placeAt(int i, int j) {
   if (south != EMPTY) replaceAll(south, minId);
   if (east != EMPTY) replaceAll(east, minId);
   if (west != EMPTY) replaceAll(west, minId);
+
+  if (_idSizes[minId] > _lorgeVal) {
+    _lorgeVal = _idSizes[minId];
+    _lorgeId = minId;
+  }
 }
 
 void TerritoryTracker::replaceAll(int8_t oldId, int8_t newId) {
@@ -94,15 +105,16 @@ const uint8_t TerritoryTracker::operator()(const int n) const {
 }
 
 int TerritoryTracker::largestTerritory() const {
-  uint8_t currMaxVal = 0;
-  int currMaxIndex = 0;
-  for (int n = 0; n < HEIGHT*WIDTH; n++) {
-    if (currMaxVal < _idSizes[n]) {
-      currMaxVal = _idSizes[n];
-      currMaxIndex = n;
-    }
-  }
-  return currMaxIndex;
+  return _lorgeId;
+  // uint8_t currMaxVal = 0;
+  // int currMaxIndex = 0;
+  // for (int n = 0; n < HEIGHT*WIDTH; n++) {
+  //   if (currMaxVal < _idSizes[n]) {
+  //     currMaxVal = _idSizes[n];
+  //     currMaxIndex = n;
+  //   }
+  // }
+  // return currMaxIndex;
 }
 
 std::ostream& operator <<(std::ostream& o, const TerritoryTracker& tracker) {
